@@ -1,0 +1,5 @@
+.calva/*
+.shadow-cljs/*
+.cpcache/*
+node_modules/*
+out/*
