@@ -8,5 +8,9 @@ dev: node_modules
 	#clj -M:core-matrix:dev mathjs-cljs.core --repl
 	#clojure -M:core-matrix:dev:cljs:shadow-cljs watch app
 
-test:
-	clojure -M:test -m portal.test-runner
+test/browser:
+	clojure -M:core-matrix:shadow-cljs watch browser
+
+test/node:
+	clojure -M:core-matrix:shadow-cljs compile test
+	node out/node/tests.js

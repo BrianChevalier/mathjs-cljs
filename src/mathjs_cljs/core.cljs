@@ -1,11 +1,11 @@
 (ns mathjs-cljs.core
   (:require
-   [clojure.core.protocols :refer [Datafiable]]
-   [clojure.core.matrix.implementations :as imp]
-   [clojure.core.matrix.protocols :as proto]
-   ["mathjs" :as m]
    [clojure.core.matrix :as core]
-   [clojure.core.matrix.linear :as lin]))
+   [clojure.core.matrix.implementations :as imp]
+   [clojure.core.matrix.linear :as lin]
+   [clojure.core.matrix.protocols :as proto]
+   [clojure.core.protocols :refer [Datafiable]]
+   ["mathjs" :as m]))
 
 (extend-type m/Matrix
   Datafiable

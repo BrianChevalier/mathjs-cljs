@@ -7,7 +7,12 @@
  {:core-matrix
   {:override-deps
    {net.mikera/core.matrix
-    {:local/root "../core.matrix"}}}
+    {:local/root "../core.matrix"
+     :deps/manifest :deps}}}
+  :shadow-cljs
+  {:extra-deps
+   {thheller/shadow-cljs {:mvn/version "2.11.7"}}
+   :main-opts ["-m" "shadow.cljs.devtools.cli"]}
   :dev
   {:extra-paths ["dev"]
    :extra-deps
