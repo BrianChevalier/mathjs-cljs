@@ -5,7 +5,8 @@
    [clojure.core.matrix.linear :as lin]
    [clojure.core.matrix.protocols :as proto]
    [clojure.core.protocols :refer [Datafiable]]
-   ["mathjs" :as m]))
+   ["mathjs" :as m]
+   [portal.web :as p]))
 
 (extend-type m/Matrix
   Datafiable
@@ -26,6 +27,16 @@
     (apply m/zeros shape))
   (supports-dimensionality? [m dimensions] true)
 
+  proto/PZeroDimensionConstruction
+  (new-scalar-array
+    ([m] 0)
+    ([m value] value))
+
+  proto/PGenericValues
+  (generic-zero [m] 0)
+  (generic-one [m] 1)
+  (generic-value [m] 0)
+
   proto/PDimensionInfo
   (dimensionality [m]
     (-> m .size .-length))
@@ -43,7 +54,7 @@
   (get-1d [m row]
     (m/row m row))
   (get-2d [m row column]
-    (-> m (m/row row) (m/column column)))
+    (m/subset m (m/index row column)))
   (get-nd [m indexes]
     (m/subset m (apply m/index indexes)))
 
@@ -96,7 +107,7 @@
     ([m]
      (throw (js/Error. "Not implemented")))
     ([m a]
-     (m/dotDivide m)))
+     (m/dotDivide m a)))
 
   proto/PTranspose
   (transpose [m]
@@ -191,10 +202,22 @@
 
   proto/PCoercion
   (coerce-param [m param]
-    (m/matrix (clj->js param)))
+    (p/open)
+    (p/tap)
+    (tap> {:m m :param param :type (type param)})
+                
+    (cond
+      (type (m/zeros 2 2)) (m/matrix (clj->js param))
+      
+      :else nil))
 
   proto/PReshaping
-  (reshape [m shape] (m/reshape (m/clone m) (clj->js shape)))
+  (reshape [m shape]
+    (m/reshape m (clj->js shape)))
+
+  proto/PDoubleArrayOutput
+  (to-double-array [m] (m/matrix (clj->js (m/flatten m))))
+  (as-double-array [m] nil)
 
   proto/PConversion
   (convert-to-nested-vectors [m]
@@ -203,25 +226,25 @@
 (imp/register-implementation (m/zeros 2 2))
 (core/set-current-implementation (m/zeros 2 2))
 
-(def mat
-  (core/matrix
-   [[1 2]
-    [3 4]
-    [4 5]]))
+;; (def mat
+;;   (core/matrix
+;;    [[1 2]
+;;     [3 4]
+;;     [4 5]]))
 
-(defn blah []
-  (for [row mat]
-    (for [col row] (str col))))
+;; (defn blah []
+;;   (for [row mat]
+;;     (for [col row] (str col))))
 
-(def mat2 (core/matrix [0 1])) ;2
+;; (def mat2 (core/matrix [0 1])) ;2
 
-(defn broadcast [m new-shape] ; 2, 1
-  (let [m (m/clone m)]
-    (cond
-    ;; 1-d array reshape
-      (= (-> m .size .-length) 1)
-      (m/reshape m (clj->js new-shape))
-      :else (throw (js/Error. (str "Could not broadcast to target shape " new-shape))))))
+;; (defn broadcast [m new-shape] ; 2, 1
+;;   (let [m (m/clone m)]
+;;     (cond
+;;     ;; 1-d array reshape
+;;       (= (-> m .size .-length) 1)
+;;       (m/reshape m (clj->js new-shape))
+;;       :else (throw (js/Error. (str "Could not broadcast to target shape " new-shape))))))
 
 (comment
 
