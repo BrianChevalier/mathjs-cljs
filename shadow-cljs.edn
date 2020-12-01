@@ -4,7 +4,8 @@
    :test-dir  "out/browser/test"
    :devtools
    {:http-port 8021
-    :http-root "out/browser/test"}}
+    :http-root "out/browser/test"
+    :preloads   [cljs.user]}}
   :test
   {:target    :node-test
    :output-to "out/node/tests.js"}}}
