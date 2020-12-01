@@ -5,8 +5,7 @@
    [clojure.core.matrix.linear :as lin]
    [clojure.core.matrix.protocols :as proto]
    [clojure.core.protocols :refer [Datafiable]]
-   ["mathjs" :as m]
-   [portal.web :as p]))
+   ["mathjs" :as m]))
 
 (extend-type m/Matrix
   Datafiable
@@ -54,6 +53,7 @@
   (get-1d [m row]
     (m/row m row))
   (get-2d [m row column]
+    ;;(tap(m/subset m (m/index row column)))
     (m/subset m (m/index row column)))
   (get-nd [m indexes]
     (m/subset m (apply m/index indexes)))
@@ -202,14 +202,10 @@
 
   proto/PCoercion
   (coerce-param [m param]
-    (p/open)
-    (p/tap)
-    (tap> {:m m :param param :type (type param)})
-                
     (cond
-      (type (m/zeros 2 2)) (m/matrix (clj->js param))
-      
-      :else nil))
+      (instance? m/Matrix param) param
+      (vector? param) (m/matrix (clj->js param))
+      :else  (m/matrix (clj->js (proto/convert-to-nested-vectors param)))))
 
   proto/PReshaping
   (reshape [m shape]
