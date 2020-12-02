@@ -9,8 +9,8 @@ dev: node_modules
 	#clojure -M:core-matrix:dev:cljs:shadow-cljs watch app
 
 test/browser:
-	clojure -M:core-matrix:shadow-cljs watch browser
+	clojure -M:core-matrix:dev:shadow-cljs watch browser
 
 test/node:
-	clojure -M:core-matrix:shadow-cljs compile test
+	clojure -M:core-matrix:dev:shadow-cljs compile test
 	node out/node/tests.js
